@@ -1,9 +1,9 @@
 /*
 // app / calendar/ page.tsx
-// Paul Valenzuela & OpenAI V1 
+// Paul Valenzuela & OpenAI V2 
 // Generates Calendar Object
 */
-
+import { Suspense } from "react";
 import CalendarPageClient from "./CalendarPageClient";
 import type { Metadata } from "next";
 
@@ -13,5 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <CalendarPageClient />;
+  return (
+    <Suspense fallback={<div style={{ padding: 24 }}>Loading calendar…</div>}>
+      <CalendarPageClient />
+    </Suspense>
+  );
 }

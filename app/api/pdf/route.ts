@@ -31,16 +31,11 @@ export async function GET(req: NextRequest) {
 
   const isProd = process.env.NODE_ENV === "production";
 
-  const browser = isProd
-    ? await puppeteerCore.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
-      })
-    : await puppeteer.launch({
-        headless: "new",
-      });
+  const browser = await puppeteerCore.launch({
+  args: chromium.args,
+  executablePath: await chromium.executablePath(),
+  headless: true,
+});
 
   try {
     const page = await browser.newPage();
@@ -49,19 +44,19 @@ export async function GET(req: NextRequest) {
 
     const pdfBuffer = await page.pdf({
   format: "Letter",
-  landscape: true,          // ✅ add this
+  landscape: true,
   printBackground: true,
   preferCSSPageSize: true,
   margin: { top: "0.5in", right: "0.5in", bottom: "0.5in", left: "0.5in" },
 });
 
-    return new Response(pdfBuffer, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${filename}"`,
-        "Cache-Control": "no-store",
-      },
-    });
+return new Response(Buffer.from(pdfBuffer), {
+  headers: {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename="${filename}"`,
+    "Cache-Control": "no-store",
+  },
+});
   } finally {
     await browser.close();
   }
